@@ -9,7 +9,7 @@ import RPi.GPIO as GPIO
 import logging
 
 GPIO_OUT = 14
-START_TEMP = 50
+START_TEMP = 55
 CLOSE_TEMP = 45
 DELAY_TIME = 15
 LOG_PATH = '/var/log/fan_control.log'
@@ -64,17 +64,18 @@ def setup_GPIO():
 
 
 def control_fan():
-    is_closed = False
+    is_closed = True
     try:
         while True:
             temp = get_cpu_temperature()
+            logging.debug("temperature: %s" % temp)
             # 温度大于START_TEMP开启风扇， 低于CLOSE_TEMP关闭风扇
             if (temp > START_TEMP and is_closed):
                 start_fan(temp)
-                is_closed = True
+                is_closed = False
             elif (temp < CLOSE_TEMP and not is_closed):
                 stop_fan(temp)
-                is_closed = False
+                is_closed = True
             else:
                 pass
             time.sleep(DELAY_TIME)
